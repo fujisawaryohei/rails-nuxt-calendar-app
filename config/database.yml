@@ -1,0 +1,23 @@
+default: &default
+  adapter: postgresql
+  encoding: unicode
+  # For details on connection pooling, see Rails configuration guide
+  # https://guides.rubyonrails.org/configuring.html#database-pooling
+  pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
+  username: postgres
+  password: postgres
+
+development:
+  <<: *default
+  host: db
+  database: todo-calendar_development
+
+test:
+  <<: *default
+  database:  todo-calendar_test
+  host: <%= ENV['DB_HOST'] || 'db' %>
+
+production:
+  <<: *default
+  database: todo_calendar_production
+  password: <%= ENV['TODO_CALENDAR_DATABASE_PASSWORD'] %>
