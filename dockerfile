@@ -10,6 +10,7 @@ ADD Gemfile /app/Gemfile
 
 RUN apt-get update -qq
 
-RUN bundle install
+RUN bundle config set path 'vendor/bundle'
+RUN bundle install -j4
 
 ADD . /app
