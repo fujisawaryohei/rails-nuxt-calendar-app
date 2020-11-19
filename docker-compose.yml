@@ -13,13 +13,16 @@ services:
       - 3307:3306
     networks:
       app_net:
-        ipv4_address: '172.10.0.2'
+        ipv4_address: "172.10.0.2"
 
   backend:
     container_name: todo-calendar-backend
     build: .
     image: todo-calendar-backend
-    command: bash -c "rm -f tmp/pids/server.pid && bundle exec rails s -p 3000 -b '0.0.0.0'"
+    command: |
+      bash -c "bundle install -j4
+      rm -f tmp/pids/server.pid &&
+      bundle exec rails s -p 4000 -b '0.0.0.0'"
     tty: true
     stdin_open: true
     volumes:
@@ -29,11 +32,27 @@ services:
     depends_on:
       - db
     ports:
-      - 5000:3000 # ポートフォワード
+      - 4000:4000
     networks:
       app_net:
-        ipv4_address: '172.10.0.3'
-  
+        ipv4_address: "172.10.0.3"
+
+  frontend:
+    container_name: todo-calendar-frontend
+    build: ./frontend/
+    image: todo-calendar-frontend
+    volumes:
+      - ./frontend:/app:cached
+    ports:
+      - 3000:3000
+    command: "yarn run dev"
+    networks:
+      app_net:
+        ipv4_address: "172.10.0.4"
+    depends_on:
+      - backend
+      - db
+
 networks:
   app_net:
     driver: bridge
@@ -41,5 +60,6 @@ networks:
       driver: default
       config:
         - subnet: 172.10.0.0/24
+
 volumes:
   postgres_data:
