@@ -3,7 +3,11 @@
     <side-nav-menu :drawer="drawer" :items="loggedInItems" />
     <v-app-bar fixed app>
       <v-app-bar-nav-icon @click.stop="drawer = !drawer" />
-      <v-toolbar-title v-text="title" />
+      <v-toolbar-title
+        style="cursor: pointer"
+        @click="$router.push('/')"
+        v-text="title"
+      />
     </v-app-bar>
     <v-main>
       <v-container>
@@ -31,12 +35,12 @@ export default {
         {
           icon: 'mdi-apps',
           title: 'Todo一覧',
-          to: '/todo',
+          to: '/',
         },
         {
           icon: 'mdi-apps',
           title: 'Todoを追加する',
-          to: '/',
+          to: '/todo',
         },
       ],
     }

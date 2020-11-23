@@ -1,16 +1,11 @@
 <template>
-  <div>
-    <todo-top />
-    <todo-card />
-  </div>
+  <todo />
 </template>
 <script>
-import TodoTop from '../components/TodoTop'
-import TodoCard from '../components/TodoCard'
+import Todo from '../components/Todo'
 export default {
   components: {
-    'todo-top': TodoTop,
-    'todo-card': TodoCard,
+    todo: Todo,
   },
 }
 </script>
