@@ -24,7 +24,7 @@
         <template v-slot:activator="{ on }">
           <v-text-field
             v-model="date"
-            label="Picker in menu"
+            label="Picker in Date"
             readonly
             v-on="on"
           ></v-text-field>
@@ -50,7 +50,7 @@
         <template v-slot:activator="{ on }">
           <v-text-field
             v-model="time"
-            label="Picker in menu2"
+            label="Picker in Time"
             readonly
             v-on="on"
           ></v-text-field>
