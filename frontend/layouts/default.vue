@@ -1,21 +1,9 @@
 <template>
   <v-app dark>
-    <side-nav-menu
-      :drawer="drawer"
-      :mini-variant="miniVariant"
-      :clipped="clipped"
-      :items="loggedInItems"
-    />
-    <v-app-bar :clipped-left="clipped" fixed app>
+    <side-nav-menu :drawer="drawer" :items="loggedInItems" />
+    <v-app-bar fixed app>
       <v-app-bar-nav-icon @click.stop="drawer = !drawer" />
-      <v-btn icon @click.stop="miniVariant = !miniVariant">
-        <v-icon>mdi-{{ `chevron-${miniVariant ? 'right' : 'left'}` }}</v-icon>
-      </v-btn>
-      <v-btn icon @click.stop="clipped = !clipped">
-        <v-icon>mdi-application</v-icon>
-      </v-btn>
       <v-toolbar-title v-text="title" />
-      <v-spacer />
     </v-app-bar>
     <v-main>
       <v-container>
@@ -36,7 +24,7 @@ export default {
   },
   data() {
     return {
-      clipped: false,
+      title: 'Sample TodoApp',
       drawer: false,
       fixed: false,
       loggedInItems: [
@@ -46,9 +34,6 @@ export default {
           to: '/',
         },
       ],
-      miniVariant: false,
-      right: true,
-      title: 'Roryu',
     }
   },
 }

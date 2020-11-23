@@ -1,11 +1,5 @@
 <template>
-  <v-navigation-drawer
-    v-model="drawer"
-    :mini-variant="miniVariant"
-    :clipped="clipped"
-    fixed
-    app
-  >
+  <v-navigation-drawer :value="drawer" app>
     <v-list>
       <v-list-item
         v-for="(item, i) in items"
@@ -28,16 +22,6 @@
 export default {
   props: {
     drawer: {
-      type: Boolean,
-      required: true,
-      default: false,
-    },
-    miniVariant: {
-      type: Boolean,
-      required: true,
-      default: false,
-    },
-    clipped: {
       type: Boolean,
       required: true,
       default: false,
