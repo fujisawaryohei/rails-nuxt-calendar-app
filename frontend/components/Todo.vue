@@ -38,7 +38,7 @@
     </v-col>
     <v-col cols="6">
       <v-menu
-        ref="menu2"
+        ref="timeMenu"
         v-model="menu2"
         :close-on-content-click="false"
         :return-value.sync="time"
@@ -58,7 +58,9 @@
         <v-time-picker v-model="time">
           <v-spacer></v-spacer>
           <v-btn text color="primary" @click="menu2 = false">Cancel</v-btn>
-          <v-btn text color="primary" @click="$refs.menu2.save(time)">OK</v-btn>
+          <v-btn text color="primary" @click="$refs.timeMenu.save(time)"
+            >OK</v-btn
+          >
         </v-time-picker>
       </v-menu>
     </v-col>
@@ -68,6 +70,13 @@
           <div>description <small>(optional)</small></div>
         </template>
       </v-textarea>
+    </v-col>
+    <v-col cols="12">
+      <v-card-actions>
+        <v-spacer></v-spacer>
+        <v-btn color="error"> 取り消す </v-btn>
+        <v-btn color="primary">送信</v-btn>
+      </v-card-actions>
     </v-col>
   </v-row>
 </template>
