@@ -30,6 +30,11 @@ export default {
       loggedInItems: [
         {
           icon: 'mdi-apps',
+          title: 'Todo一覧',
+          to: '/todo',
+        },
+        {
+          icon: 'mdi-apps',
           title: 'Todoを追加する',
           to: '/',
         },
