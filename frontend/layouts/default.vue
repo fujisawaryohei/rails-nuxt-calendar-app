@@ -30,7 +30,7 @@ export default {
       loggedInItems: [
         {
           icon: 'mdi-apps',
-          title: 'カレンダー',
+          title: 'Todoを追加する',
           to: '/',
         },
       ],
