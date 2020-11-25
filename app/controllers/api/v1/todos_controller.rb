@@ -5,11 +5,11 @@ class Api::V1::TodosController < ApplicationController
   end
       
   def show
-    todo = Todo.find(params[:id])
-    if todo
+    todo = Todo.find_by(id: params[:id])
+    unless todo.nil?
       render json: todo
     else
-      render json: { error_message: '存在しません'}
+      render json: { error_message: 'Not Found'}
     end
   end
       
