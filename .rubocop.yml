@@ -1,0 +1,33 @@
+require:
+  - rubocop-rspec
+  - rubocop-rails
+
+AllCops:
+  TargetRubyVersion: 2.7
+  Exclude:
+    - "spec/**/*"
+    - "vendor/**/*"
+    - "db/**/*"
+    - "config/**/*"
+    - "bin/**/*"
+    - "tmp/**/*"
+    - "node_modules/**/*"
+    - "lib/tasks/onetime/**/*"
+    - "frontend/**/*"
+    - "lib/tasks/auto_annotate_models.rake"
+    - "Gemfile"
+    - "Rakefile"
+    - "config.ru"
+  NewCops: enable
+
+Rails:
+  Enabled: true
+
+Style:
+  Enabled: false
+
+Layout:
+  Enabled: false
+
+Metrics/MethodLength:
+  Enabled: false
