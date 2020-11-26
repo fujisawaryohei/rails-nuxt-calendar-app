@@ -1,11 +1,11 @@
 <template>
-  <todo />
+  <todo-form />
 </template>
 <script>
-import Todo from '../components/Todo'
+import TodoForm from '../components/TodoForm'
 export default {
   components: {
-    todo: Todo,
+    'todo-form': TodoForm,
   },
 }
 </script>
