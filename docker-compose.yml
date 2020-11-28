@@ -2,7 +2,7 @@ version: "3"
 
 services:
   db:
-    container_name: todo-calendar-db
+    container_name: todo-app-db
     image: postgres:11.5
     environment:
       TZ: Asia/Tokyo
@@ -16,9 +16,12 @@ services:
         ipv4_address: "172.10.0.2"
 
   backend:
-    container_name: todo-calendar-backend
+    container_name: todo-app-backend
     build: .
-    image: todo-calendar-backend
+    image: todo-app-backend
+    environment:
+      - TODO_APP_API_HOST=172.10.0.3:4000
+      - TODO_APP_FRONT_HOST=172.10.0.4:3000
     command: |
       bash -c "bundle install -j4
       rm -f tmp/pids/server.pid &&
@@ -27,6 +30,11 @@ services:
     stdin_open: true
     volumes:
       - ./:/app:cached
+      - bundle_data:/usr/local/bundle:cached
+      - /app/vendor
+      - /app/tmp
+      - /app/log
+      - /app/.git
     environment:
       TZ: Asia/Tokyo
     depends_on:
@@ -38,9 +46,14 @@ services:
         ipv4_address: "172.10.0.3"
 
   frontend:
-    container_name: todo-calendar-frontend
+    container_name: todo-app-frontend
     build: ./frontend/
-    image: todo-calendar-frontend
+    image: todo-app-frontend
+    environment:
+      - NUXT_HOST=0.0.0.0
+      - NUXT_PORT=3000
+      - TODO_APP_API_HOST=172.10.0.3:4000
+      - TODO_APP_FRONT_HOST=172.10.0.4:3000
     volumes:
       - ./frontend:/app:cached
     ports:
@@ -63,3 +76,4 @@ networks:
 
 volumes:
   postgres_data:
+  bundle_data:
