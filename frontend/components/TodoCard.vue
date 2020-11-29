@@ -3,7 +3,7 @@
     <v-col cols="12">
       <v-card elevation="2" outlined :light="true">
         <v-card-title>{{ todoTitle }}</v-card-title>
-        <v-card-subtitle>{{ todoDate }}, {{ todoTime }}に開始</v-card-subtitle>
+        <v-card-subtitle>{{ todoDate }} {{ todoTime }}に開始</v-card-subtitle>
         <v-card-text>{{ todoContent }}</v-card-text>
         <v-card-actions>
           <v-spacer></v-spacer>
