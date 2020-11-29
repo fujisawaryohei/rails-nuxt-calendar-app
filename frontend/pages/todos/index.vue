@@ -1,6 +1,6 @@
 <template>
   <div>
-    <todo-top />
+    <todo-top @switchTaskStatus="switchTaskStatus" />
     <todo-card v-for="todo in todoData" :key="todo.id" :todo="todo" />
   </div>
 </template>
@@ -14,13 +14,25 @@ export default {
   },
   data() {
     return {
+      initData: [],
       todoData: [],
+      isDone: false,
     }
   },
   async created() {
     await this.$axios.$get('/api/v1/todos').then((res) => {
-      this.todoData = res
+      this.initData = res
+      this.todoData = res.filter((data) => {
+        return data.is_done === false
+      })
     })
+  },
+  methods: {
+    switchTaskStatus(value) {
+      this.todoData = this.initData.filter((data) => {
+        return data.is_done === value
+      })
+    },
   },
 }
 </script>

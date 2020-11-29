@@ -6,7 +6,16 @@
       </v-btn>
     </v-col>
     <v-col cols="5">
-      <v-switch label="完了済み"></v-switch>
+      <v-switch label="完了済み" @change="switchTaskStatus"></v-switch>
     </v-col>
   </v-row>
 </template>
+<script>
+export default {
+  methods: {
+    switchTaskStatus(value) {
+      this.$emit('switchTaskStatus', value)
+    },
+  },
+}
+</script>
