@@ -5,7 +5,7 @@
       <v-app-bar-nav-icon @click.stop="drawer = !drawer" />
       <v-toolbar-title
         style="cursor: pointer"
-        @click="$router.push('/')"
+        @click="$router.push('/todos')"
         v-text="title"
       />
     </v-app-bar>
@@ -35,7 +35,7 @@ export default {
         {
           icon: 'mdi-apps',
           title: 'Todo一覧',
-          to: '/',
+          to: '/todos',
         },
         {
           icon: 'mdi-apps',
