@@ -74,14 +74,21 @@
     <v-col cols="12">
       <v-card-actions>
         <v-spacer></v-spacer>
-        <v-btn color="error"> 取り消す </v-btn>
-        <v-btn color="primary">送信</v-btn>
+        <v-btn color="error" @click="remove()"> 取り消す </v-btn>
+        <v-btn color="primary" @click="submit()">送信</v-btn>
       </v-card-actions>
     </v-col>
   </v-row>
 </template>
 <script>
 export default {
+  props: {
+    todoId: {
+      type: String,
+      required: false,
+      default: '',
+    },
+  },
   data() {
     return {
       title: '',
@@ -91,6 +98,43 @@ export default {
       menu: false,
       menu2: false,
     }
+  },
+  async created() {
+    if (this.todoId) {
+      await this.$axios.$get(`api/v1/todos/${this.todoId}`).then((res) => {
+        this.title = res.title
+        this.date = res.date
+        this.time = res.time
+        this.description = res.content
+      })
+    }
+  },
+  methods: {
+    submit() {
+      const params = {
+        title: this.title,
+        content: this.description,
+        date: this.date,
+        time: this.time,
+      }
+      this.todoId ? this.update(params, this.todoId) : this.create(params)
+    },
+    remove() {
+      this.title = ''
+      this.description = ''
+      this.date = ''
+      this.time = ''
+    },
+    create(params) {
+      this.$axios.post('/api/v1/todos', params).then((res) => {
+        this.$router.push('/todos')
+      })
+    },
+    update(params, id) {
+      this.$axios.patch(`/api/v1/todos/${id}`, params).then((res) => {
+        this.$router.push('/todos')
+      })
+    },
   },
 }
 </script>
