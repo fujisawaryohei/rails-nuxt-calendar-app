@@ -7,7 +7,7 @@
         <v-card-text>{{ todoContent }}</v-card-text>
         <v-card-actions>
           <v-spacer></v-spacer>
-          <v-btn depressed color="error"> 削除する </v-btn>
+          <v-btn depressed color="error" @click="remove()"> 削除する </v-btn>
           <v-btn depressed color="info" @click="toEdit()"> 編集する </v-btn>
           <v-btn depressed color="primary"> 完了 </v-btn>
         </v-card-actions>
@@ -41,6 +41,14 @@ export default {
   methods: {
     toEdit() {
       this.$router.push(`/todos/${this.todo.id}`)
+    },
+    async remove() {
+      const confirmation = window.confirm('本当に削除しますか？')
+      if (confirmation) {
+        await this.$axios.$delete(`/api/v1/todos/${this.todo.id}`)
+        // TODO: 環境変数管理にシフト
+        window.location.href = `http://localhost:3000/todos`
+      }
     },
   },
 }
