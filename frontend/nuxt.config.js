@@ -39,9 +39,9 @@ export default {
     '@nuxtjs/axios',
   ],
 
-  // Axios module configuration (https://go.nuxtjs.dev/config-axios)
+  // Axios module configuration (https://go.nuxtjs.dev/config-axios)s
   axios: {
-    baseURL: 'http://localhost:4000',
+    baseURL: process.env.TODO_APP_API_HOST,
   },
 
   // Vuetify module configuration (https://go.nuxtjs.dev/config-vuetify)
