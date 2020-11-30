@@ -1,4 +1,4 @@
 module.exports = {
-  hostUrl: 'http://localhost:3000',
-  apiUrl: 'http://localhost:4000',
+  hostUrl: process.env.TODO_APP_FRONT_HOST,
+  apiUrl: process.env.TODO_APP_API_HOST,
 }
