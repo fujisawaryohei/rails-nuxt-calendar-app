@@ -1,8 +1,5 @@
 import colors from 'vuetify/es5/util/colors'
 
-const environment = process.env.NODE_ENV
-const setConfig = require(`./config/env.${environment}.js`)
-
 export default {
   // Disable server-side rendering (https://go.nuxtjs.dev/ssr-mode)
   ssr: false,
@@ -20,7 +17,10 @@ export default {
   },
 
   // definition fronend env
-  env: setConfig,
+  env: {
+    hostUrl: process.env.TODO_APP_FRONT_HOST,
+    apiUrl: process.env.TODO_APP_API_HOST,
+  },
 
   // Global CSS (https://go.nuxtjs.dev/config-css)
   css: [],
