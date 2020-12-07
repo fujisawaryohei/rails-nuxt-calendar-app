@@ -27,3 +27,6 @@
 /config/master.key
 
 /vendor
+
+# Ignore dio file
+/Docs/aws_infrastructure.dio
