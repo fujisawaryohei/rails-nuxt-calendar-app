@@ -1,0 +1,40 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: VPC and Subnet Stuck
+Resources:
+  # Hosted Zone作成
+  TodoAppHostedZone:
+    Type: AWS::Route53::HostedZone
+    Properties: 
+      HostedZoneConfig: 
+        Comment: create todo-app hosted zone
+      HostedZoneTags: 
+        - Key: Name
+          Value: todo-app-hosted-zone
+      Name: kawada.work
+      # QueryLoggingConfig:
+      #   QueryLoggingConfig
+      # VPCs: 
+      #   - VPC
+        
+  # Aレコード作成
+  TodoAppSetARecord:
+    Type: AWS::Route53::RecordSet
+    Properties: 
+        # AliasTarget: 
+        #   AliasTarget
+        Comment: Set A Record
+        # Failover: String
+        # GeoLocation: 
+        #   GeoLocation
+        # HealthCheckId: String
+        HostedZoneId: !Ref TodoAppHostedZone
+        # HostedZoneName: String
+        # MultiValueAnswer: Boolean
+        Name: kawada.work
+        # Region: String
+        ResourceRecords:
+          - !ImportValue StackTodoAppLoadBalancerDNS
+        # SetIdentifier: String
+        TTL: 300
+        Type: A
+        # Weight: Integer

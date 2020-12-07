@@ -1,0 +1,11 @@
+Type: AWS::ECS::Cluster
+Properties: 
+  CapacityProviders: 
+    - String
+  ClusterName: String
+  ClusterSettings: 
+    - ClusterSettings
+  DefaultCapacityProviderStrategy: 
+    - CapacityProviderStrategyItem
+  Tags: 
+    - Tag
