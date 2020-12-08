@@ -1,0 +1,22 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: Set ECS Task
+Resources:
+  # クラスター作成
+  TodoAppPublicCluster:
+    Type: AWS::ECS::Cluster
+    Properties:
+      # CapacityProviders: 
+      #   - String
+      ClusterName: todo-app-cluster
+      # ClusterSettings: 
+      #   - ClusterSettings
+      # DefaultCapacityProviderStrategy: 
+      #   - CapacityProviderStrategyItem
+      # Tags: 
+      #   - String
+Outputs:
+  TodoAppPublicClusterName:
+    Description: The Name of the Public Cluster
+    Value: !Ref TodoAppPublicCluster
+    Export:
+      Name: TodoAppPublicClusterName

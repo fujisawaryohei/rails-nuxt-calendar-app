@@ -1,0 +1,62 @@
+# AWSTemplateFormatVersion: '2010-09-09'
+# Description: ApplicationLoadBalancer Stuck
+# Resources:
+#   # Application Load Balancerのセキュリティグループを作成
+#   TodoAppELBSecurityGroup:
+#     Type: AWS::EC2::SecurityGroup
+#     Properties: 
+#       GroupDescription: Setting SecurityGroup
+#       GroupName: Setting Security Group for ELB
+#       SecurityGroupIngress: 
+#         - CidrIp: 0.0.0.0/0
+#           Description: users
+#           FromPort: 80
+#           ToPort: 80
+#           IpProtocol: tcp
+#       Tags:
+#         - Key: Name
+#           Value: todo-app-elb-security-group
+
+#   # Applicaiton Load Balancerを作成
+#   TodoAppLoadBalancer:
+#     Type: AWS::ElasticLoadBalancingV2::LoadBalancer
+#     Properties: 
+#       # IpAddressType: String
+#       # LoadBalancerAttributes: 
+#       #   - LoadBalancerAttribute
+#       Name: todo-app-frontend-elb
+#       # Scheme: String
+#       SecurityGroups: !Ref TodoAppELBSecurityGroup
+#       SubnetMappings: 
+#         - SubnetId: !ImportValue TodoAppPublicSubnet1AID
+#           # AllocationId: String
+#           # PrivateIPv4Address: String
+#       # Subnets: 
+#       #   - String
+#       Tags:
+#         - Key: Name
+#           Value: todo-app-frontend-elb
+#       Type: application
+
+#   # リスナーをApplication Load Balancerに関連付ける
+#   TodoAppListener:
+#     Type: AWS::ElasticLoadBalancingV2::Listener
+#     Properties:
+#       # AlpnPolicy: 
+#       #   - String
+#       # Certificates: 
+#       #   - Certificate
+#       # DefaultActions: 
+#       #   - Action
+#       LoadBalancerArn: !Ref TodoAppLoadBalancer
+#       Port: 80
+#       Protocol: HTTP
+#       # SslPolicy: String
+
+# # エクスポート
+# Outputs:
+#   StackTodoAppLoadBalancerDNS:
+#     Description: The DNS Name of Application Load Balancer
+#     Value: !GetAtt TodoAppLoadBalancer.DNSName
+#     Export:
+#       Name: StackTodoAppLoadBalancer
