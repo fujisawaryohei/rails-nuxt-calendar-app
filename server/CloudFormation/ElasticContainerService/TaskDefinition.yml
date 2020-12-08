@@ -1,24 +1,117 @@
-Type: AWS::ECS::TaskDefinition
-Properties: 
-  ContainerDefinitions: 
-    - ContainerDefinition
-  Cpu: String
-  ExecutionRoleArn: String
-  Family: String
-  InferenceAccelerators: 
-    - InferenceAccelerator
-  IpcMode: String
-  Memory: String
-  NetworkMode: String
-  PidMode: String
-  PlacementConstraints: 
-    - TaskDefinitionPlacementConstraint
-  ProxyConfiguration: 
-    ProxyConfiguration
-  RequiresCompatibilities: 
-    - String
-  Tags: 
-    - Tag
-  TaskRoleArn: String
-  Volumes: 
-    - Volume
+AWSTemplateFormatVersion: '2010-09-09'
+Description: Set ECS Task
+Resources:
+  # Elastic Container Registryからイメージをプルするロール作成
+  RoleOfTodoAppEcsTask:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - ecs-tasks.amazonaws.com
+            Action:
+              - 'sts:AssumeRole'
+      Path: /
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy
+      RoleName: ecsTaskExecutionRoleForTodoApp
+
+  # タスク定義
+  TodoAppTaskDefinitionPublic:
+    Type: AWS::ECS::TaskDefinition
+    Properties:
+      ContainerDefinitions: 
+        - 
+          # Command: 
+          #   - String
+          # Cpu: Integer
+          # DependsOn: 
+          #   - ContainerDependency
+          # DisableNetworking: Boolean
+          # DnsSearchDomains: 
+          #   - String
+          # DnsServers: 
+          #   - String
+          # DockerLabels: 
+          #   Key : Value
+          # DockerSecurityOptions: 
+          #   - String
+          # EntryPoint: 
+          #   - String
+          # Environment: 
+          #   - KeyValuePair
+          # EnvironmentFiles: 
+          #   - EnvironmentFile
+          # Essential: Boolean
+          # ExtraHosts: 
+          #   - HostEntry
+          # FirelensConfiguration: 
+          #   FirelensConfiguration
+          # HealthCheck: 
+          #   HealthCheck
+          # Hostname: String
+          Image: 000796434707.dkr.ecr.ap-northeast-1.amazonaws.com/todo-app-frontend-production
+          # Interactive: Boolean
+          # Links: 
+          #   - String
+          # LinuxParameters: 
+          #   LinuxParameters
+          # LogConfiguration: 
+          #   LogConfiguration
+          # Memory: Integer
+          # MemoryReservation: Integer
+          # MountPoints: 
+          #   - MountPoint
+          Name: String
+          # PortMappings:
+          #   - PortMapping
+          # Privileged: Boolean
+          # PseudoTerminal: Boolean
+          # ReadonlyRootFilesystem: Boolean
+          # RepositoryCredentials: 
+          #   RepositoryCredentials
+          # ResourceRequirements: 
+          #   - ResourceRequirement
+          # Secrets: 
+          #   - Secret
+          # StartTimeout: Integer
+          # StopTimeout: Integer
+          # SystemControls: 
+          #   - SystemControl
+          # Ulimits: 
+          #   - Ulimit
+          # User: String
+          # VolumesFrom: 
+          #   - VolumeFrom
+          # WorkingDirectory: String
+      Cpu: 256
+      ExecutionRoleArn: !GetAtt RoleOfTodoAppEcsTask.Arn
+      # Family: String
+      # InferenceAccelerators: 
+      #   - InferenceAccelerator
+      # IpcMode: String
+      Memory: 512
+      NetworkMode: awsvpc
+      # PidMode: String
+      # PlacementConstraints: 
+      #   - TaskDefinitionPlacementConstraint
+      # ProxyConfiguration: 
+      #   ProxyConfiguration
+      RequiresCompatibilities: 
+        - FARGATE
+      Tags: 
+        - Key: Name
+          Value: todo-app-frontend-task
+      # TaskRoleArn: String
+      # Volumes: 
+      #   - Volume
+# エクスポート
+Outputs:
+  TodoAppTaskDefinitionPublicARN:
+    Description: The ARN of the TaskDefinition
+    Value: !Ref TodoAppTaskDefinitionPublic
+    Export:
+      Name: TodoAppTaskDefinitionPublicARN

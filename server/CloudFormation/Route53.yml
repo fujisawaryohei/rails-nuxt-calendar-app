@@ -33,7 +33,8 @@ Resources:
         Name: kawada.work
         # Region: String
         ResourceRecords:
-          - !ImportValue StackTodoAppLoadBalancerDNS
+          # NuxtインスタンスのIP
+          # -
         # SetIdentifier: String
         TTL: 300
         Type: A

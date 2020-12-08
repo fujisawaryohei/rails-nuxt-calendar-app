@@ -43,6 +43,11 @@ Resources:
           FromPort: 80
           ToPort: 80
           IpProtocol: tcp
+        - CidrIp: 0.0.0.0/0
+          Description: users
+          FromPort: 3000
+          ToPort: 3000
+          IpProtocol: tcp
       Tags:
         - Key: Name
           Value: todo-app-nuxt-security-group-nuxt
@@ -174,12 +179,17 @@ Resources:
     Type: AWS::EC2::SubnetRouteTableAssociation
     Properties: 
       RouteTableId: !Ref TodoAppPrivateRouteTable
-      SubnetId: !Ref TodoAppPublicSubnet1A
+      SubnetId: !Ref TodoAppPrivateSubnet1A
   
 # エクスポート
 Outputs:
-  StackTodoAppPublicSubnet1A:
+  TodoAppPublicSubnet1AID:
     Description: The ID of the Public Subnet
     Value: !Ref TodoAppPublicSubnet1A
     Export:
-      Name: StackTodoAppPublicSubnet1A
+      Name: TodoAppPublicSubnet1AID
+  TodoAppSecurityGroupNuxtInstanceID:
+    Description: The ID of the SecurityGroup for Nuxt Instance
+    Value: !Ref TodoAppSecurityGroupNuxtInstance
+    Export:
+      Name: TodoAppSecurityGroupNuxtInstanceID
