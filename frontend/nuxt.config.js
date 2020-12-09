@@ -18,8 +18,12 @@ export default {
 
   // definition fronend env
   env: {
-    hostUrl: process.env.TODO_APP_FRONT_HOST,
-    apiUrl: process.env.TODO_APP_API_HOST,
+    hostUrl: process.env.TODO_APP_FRONT_HOST
+      ? process.env.TODO_APP_FRONT_HOST
+      : 'localhost:3000',
+    apiUrl: process.env.TODO_APP_API_HOST
+      ? process.env.TODO_APP_API_HOST
+      : 'localhost:4000',
   },
 
   // Global CSS (https://go.nuxtjs.dev/config-css)
@@ -47,7 +51,9 @@ export default {
 
   // Axios module configuration (https://go.nuxtjs.dev/config-axios)s
   axios: {
-    baseURL: process.env.TODO_APP_API_HOST,
+    baseURL: process.env.TODO_APP_API_HOST
+      ? process.env.TODO_APP_API_HOST
+      : 'localhost:4000',
   },
 
   // Vuetify module configuration (https://go.nuxtjs.dev/config-vuetify)
