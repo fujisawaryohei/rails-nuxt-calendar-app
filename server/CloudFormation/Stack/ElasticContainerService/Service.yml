@@ -21,7 +21,7 @@ Resources:
         AwsvpcConfiguration:
           AssignPublicIp: ENABLED
           SecurityGroups: 
-            - !ImportValue TodoAppSecurityGroupNuxtInstanceID
+            - !ImportValue TodoAppSecurityGroupECSInstanceID
           Subnets: 
             - !ImportValue TodoAppPublicSubnet1AID
       # PlacementConstraints: 

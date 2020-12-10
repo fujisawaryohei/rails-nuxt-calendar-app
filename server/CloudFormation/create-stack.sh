@@ -3,6 +3,9 @@ set -eu
 # VPCスタックテンプレートの検証
 aws cloudformation validate-template --template-body file://"$(pwd)"/Stack/VPC.yml
 
+# RDSスタックテンプレートの検証
+aws cloudformation validate-template --template-body file://"$(pwd)"/Stack/RDS.yml
+
 # TaskDefnitionスタックテンプレートの検証
 aws cloudformation validate-template --template-body file://"$(pwd)"/Stack/ElasticContainerService/TaskDefinition.yml
 
@@ -18,6 +21,10 @@ aws cloudformation validate-template --template-body file://"$(pwd)"/Stack/Elast
 # VPCスタックの作成
 aws cloudformation create-stack --stack-name VPCStack --template-body file://"$(pwd)"/Stack/VPC.yml
 aws cloudformation wait stack-create-complete --stack-name VPCStack
+
+# RDSスタックの作成
+aws cloudformation create-template --stack-name RDSStack --template-body file://"$(pwd)"/Stack/RDS.yml
+aws cloudformation wait stack-create-complete --stack-name RDSStack
 
 # TaskDefnitionスタックの作成
 # capabilitiesオプション参考: https://docs.aws.amazon.com/ja_jp/AWSCloudFormation/latest/UserGuide/using-iam-template.html#using-iam-capabilities

@@ -8,6 +8,10 @@ aws cloudformation wait stack-delete-complete --stack-name ServiceStack
 aws cloudformation delete-stack --stack-name VPCStack
 aws cloudformation wait stack-delete-complete --stack-name VPCStack
 
+# RDSスタックの削除
+aws cloudformation delete-template --stack-name RDSStack
+aws cloudformation wait stack-delete-complete --stack-name RDSStack
+
 # TaskDefnitionスタックの削除
 aws cloudformation delete-stack --stack-name TaskDefinitionStack
 aws cloudformation wait stack-delete-complete --stack-name TaskDefinitionStack

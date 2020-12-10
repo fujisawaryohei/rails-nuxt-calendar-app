@@ -14,25 +14,8 @@ Resources:
           Value: todo-app-vpc
 
   # セキュリティグループ
-  # Railsインスタンスのセキュリティグループの作成とVPCへの登録
-  TodoAppSecurityGroupRailsInstance:
-    Type: AWS::EC2::SecurityGroup
-    Properties: 
-      GroupDescription: Setting SecurityGroup
-      GroupName: Setting Security Group for Rails Instance
-      SecurityGroupIngress: 
-        - CidrIp: 0.0.0.0/0
-          Description: users
-          FromPort: 80
-          ToPort: 80
-          IpProtocol: tcp
-      Tags:
-        - Key: Name
-          Value: todo-app-rails-security-group
-      VpcId: !Ref TodoAppVPC
-  
-  # Nuxtインスタンスのセキュリティグループの作成とVPCへの登録
-  TodoAppSecurityGroupNuxtInstance:
+  # ECSインスタンスのセキュリティグループの作成とVPCへの登録
+  TodoAppSecurityGroupECSInstance:
     Type: AWS::EC2::SecurityGroup
     Properties: 
       GroupDescription: Setting SecurityGroup
@@ -48,12 +31,17 @@ Resources:
           FromPort: 3000
           ToPort: 3000
           IpProtocol: tcp
+        - CidrIp: 0.0.0.0/0
+          Description: users
+          FromPort: 5432
+          ToPort: 5432
+          IpProtocol: tcp
       Tags:
         - Key: Name
           Value: todo-app-nuxt-security-group-nuxt
       VpcId: !Ref TodoAppVPC
       
-  # サブネット
+  # ap-northeast-1a サブネット
   # パプリックサブネットの作成
   TodoAppPublicSubnet1A:
     Type: AWS::EC2::Subnet
@@ -82,6 +70,35 @@ Resources:
       # AssignIpv6AddressOnCreation: Boolean
       # Ipv6CidrBlock: String
 
+  # ap-northeast-1c サブネット（SingleAZ構成だがRDS設置の際に別AZのサブネットを2つ指定する必要があるため作成）
+  # パブリックサブネットの作成
+  TodoAppPublicSubnet1C:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref TodoAppVPC
+      AvailabilityZone: ap-northeast-1c
+      CidrBlock: 10.0.3.0/24
+      MapPublicIpOnLaunch: true
+      Tags:
+        - Key: Name
+          Value: todo-app-private-subnet-1c
+      # AssignIpv6AddressOnCreation: Boolean
+      # Ipv6CidrBlock: String
+
+  # プライベートサブネットの作成
+  TodoAppPrivateSubnet1C:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref TodoAppVPC
+      AvailabilityZone: ap-northeast-1c
+      CidrBlock: 10.0.4.0/24
+      MapPublicIpOnLaunch: true
+      Tags:
+        - Key: Name
+          Value: todo-app-private-subnet-1c
+      # AssignIpv6AddressOnCreation: Boolean
+      # Ipv6CidrBlock: String
+
   # Internet Gateway
   # Internet Gatewayの作成
   TodoAppInternetGateway:
@@ -100,48 +117,89 @@ Resources:
       # VpnGatewayId: String
 
   # Nat Gateway
-  # Nat Gatewayに割り当てるElasticIPの作成
-  ElasticIPForNatGateway:
+  # ap-northeast-1a Nat Gatewayに割り当てるElasticIPの作成
+  ElasticIP1AForNatGateway:
     Type: AWS::EC2::EIP
     Properties: 
       Domain: vpc
+      Tags:
+        - Key: Name
+          Value: nat-1a-eip
+  
+  # ap-northeast-1c Nat Gatewayに割り当てるElasticIPの作成
+  ElasticIP1CForNatGateway:
+    Type: AWS::EC2::EIP
+    Properties: 
+      Domain: vpc
+      Tags:
+        - Key: Name
+          Value: nat-1c-eip
 
-  # Nat Gatewayの作成とパブリックサブネットへの関連付け
-  TodoAppNatGateway:
+  # ap-northeast-1a Nat Gatewayの作成とパブリックサブネットへの関連付け
+  TodoAppNatGateway1A:
     Type: AWS::EC2::NatGateway
     Properties: 
-      AllocationId: !GetAtt ElasticIPForNatGateway.AllocationId
-      SubnetId: !Ref TodoAppPublicSubnet1A
+      AllocationId: !GetAtt ElasticIP1AForNatGateway.AllocationId
+      SubnetId: !Ref TodoAppPublicSubnet1C
       Tags: 
         - Key: Name
-          Value: todo-app-nat
+          Value: todo-app-nat-1a
+
+  # ap-northeast-1c Nat Gatewayの作成とパブリックサブネットへの関連付け
+  TodoAppNatGateway1C:
+    Type: AWS::EC2::NatGateway
+    Properties: 
+      AllocationId: !GetAtt ElasticIP1CForNatGateway.AllocationId
+      SubnetId: !Ref TodoAppPublicSubnet1C
+      Tags: 
+        - Key: Name
+          Value: todo-app-nat-1c
 
   # ルートテーブル
-  # パブリックサブネット用のルートテーブル作成
-  TodoAppPublicRouteTable:
+  # パブリックサブネット1A用のルートテーブル作成
+  TodoAppPublicSubnet1ARouteTable:
     Type: AWS::EC2::RouteTable
     Properties:
       Tags:
         - Key: Name
-          Value: todo-app-public-routetable
+          Value: todo-app-public-1a-routetable
       VpcId: !Ref TodoAppVPC
 
-  # プライベートサブネット用のルートテーブル作成
-  TodoAppPrivateRouteTable:
+  # プライベートサブネット1A用のルートテーブル作成
+  TodoAppPrivateSubnet1ARouteTable:
     Type: AWS::EC2::RouteTable
     Properties:
       Tags:
         - Key: Name
-          Value: todo-app-private-routetable
+          Value: todo-app-private-1a-routetable
       VpcId: !Ref TodoAppVPC
 
-  # パブリックサブネット ルーティング設定
-  TodoAppPublicRoute:
+  # パブリックサブネット1C用のルートテーブル作成
+  TodoAppPublicSubnet1CRouteTable:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      Tags:
+        - Key: Name
+          Value: todo-app-public-1c-routetable
+      VpcId: !Ref TodoAppVPC
+
+  # プライベートサブネット1C用のルートテーブル作成
+  TodoAppPrivateSubnet1CRouteTable:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      Tags:
+        - Key: Name
+          Value: todo-app-public-1c-routetable
+      VpcId: !Ref TodoAppVPC
+
+  # ルーティング設定
+  # パブリックサブネット1A ルーティング設定
+  TodoAppPublicSubnet1ARouting:
     Type: AWS::EC2::Route
     Properties:
       DestinationCidrBlock: 0.0.0.0/0
       GatewayId: !Ref TodoAppInternetGateway
-      RouteTableId: !Ref TodoAppPublicRouteTable
+      RouteTableId: !Ref TodoAppPublicSubnet1ARouteTable
       # DestinationIpv6CidrBlock: -
       # EgressOnlyInternetGatewayId: -
       # InstanceId: -
@@ -151,45 +209,116 @@ Resources:
       # VpcPeeringConnectionId: -
       # DependsOn: -
 
-  # プライベートサブネット ルーティング設定
-  TodoAppPrivateRoute:
+  # プライベートサブネット1A ルーティング設定
+  TodoAppPrivateSubnet1ARouting:
     Type: AWS::EC2::Route
     Properties:
       DestinationCidrBlock: 0.0.0.0/0
       # GatewayId:
-      RouteTableId: !Ref TodoAppPrivateRouteTable
+      RouteTableId: !Ref TodoAppPrivateSubnet1ARouteTable
       # DestinationIpv6CidrBlock: -
       # EgressOnlyInternetGatewayId: -
       # InstanceId: -
-      NatGatewayId: !Ref TodoAppNatGateway
+      NatGatewayId: !Ref TodoAppNatGateway1A
       # NetworkInterfaceId: -
       # TransitGatewayId: -
       # VpcPeeringConnectionId: -
       # DependsOn: -
 
-  # パブリックサブネットとパブリックサブネット用ルートテーブルの関連付け
-  SubnetPublicRouteTableAssociation:
+  # パブリックサブネット1C ルーティング設定
+  TodoAppPublicSubnet1CRouting:
+    Type: AWS::EC2::Route
+    Properties:
+      DestinationCidrBlock: 0.0.0.0/0
+      GatewayId: !Ref TodoAppInternetGateway
+      RouteTableId: !Ref TodoAppPublicSubnet1CRouteTable
+      # DestinationIpv6CidrBlock: -
+      # EgressOnlyInternetGatewayId: -
+      # InstanceId: -
+      # NatGatewayId: -
+      # NetworkInterfaceId: -
+      # TransitGatewayId: -
+      # VpcPeeringConnectionId: -
+      # DependsOn: -
+
+  # プライベートサブネット1C ルーティング設定
+  TodoAppPrivateSubnet1CRouting:
+    Type: AWS::EC2::Route
+    Properties:
+      DestinationCidrBlock: 0.0.0.0/0
+      # GatewayId:
+      RouteTableId: !Ref TodoAppPrivateSubnet1CRouteTable
+      # DestinationIpv6CidrBlock: -
+      # EgressOnlyInternetGatewayId: -
+      # InstanceId: -
+      NatGatewayId: !Ref TodoAppNatGateway1C
+      # NetworkInterfaceId: -
+      # TransitGatewayId: -
+      # VpcPeeringConnectionId: -
+      # DependsOn: -
+
+  # サブネットとルートテーブルの関連付け
+  # パブリックサブネット1Aとパブリックサブネット1A用ルートテーブルの関連付け
+  PublicSubnet1ARouteTableAssociation:
     Type: AWS::EC2::SubnetRouteTableAssociation
     Properties: 
-      RouteTableId: !Ref TodoAppPublicRouteTable
+      RouteTableId: !Ref TodoAppPublicSubnet1ARouteTable
       SubnetId: !Ref TodoAppPublicSubnet1A
 
-  # プライベートサブネットとプライベートサブネット用ルートテーブルの関連付け
-  SubnetPrivateRouteTableAssociation:
+  # プライベートサブネット1Aとプライベートサブネット1A用ルートテーブルの関連付け
+  PrivateSubnet1ARouteTableAssociation:
     Type: AWS::EC2::SubnetRouteTableAssociation
     Properties: 
-      RouteTableId: !Ref TodoAppPrivateRouteTable
+      RouteTableId: !Ref TodoAppPrivateSubnet1ARouteTable
       SubnetId: !Ref TodoAppPrivateSubnet1A
-  
+
+  # パブリックサブネット1Cとパブリックサブネット1C用ルートテーブルの関連付け
+  PublicSubnet1CRouteTableAssociation:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties: 
+      RouteTableId: !Ref TodoAppPublicSubnet1ARouteTable
+      SubnetId: !Ref TodoAppPublicSubnet1A
+
+  # プライベートサブネット1Cとプライベートサブネット1C用ルートテーブルの関連付け
+  PrivateSubnet1CRouteTableAssociation:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties: 
+      RouteTableId: !Ref TodoAppPrivateSubnet1ARouteTable
+      SubnetId: !Ref TodoAppPrivateSubnet1A
+
 # エクスポート
 Outputs:
+  # VPC
+  TodoAppVPCID:
+    Description: The ID of the VPC
+    Value: !Ref TodoAppVPC
+    Export:
+      Name: TodoAppVPCID
+
+  # ap-northeast-1a パブリックサブネットID
   TodoAppPublicSubnet1AID:
-    Description: The ID of the Public Subnet
+    Description: The ID of the Public Subnet at ap-northeast-1a
     Value: !Ref TodoAppPublicSubnet1A
     Export:
       Name: TodoAppPublicSubnet1AID
-  TodoAppSecurityGroupNuxtInstanceID:
-    Description: The ID of the SecurityGroup for Nuxt Instance
-    Value: !Ref TodoAppSecurityGroupNuxtInstance
+
+  # ap-northeast-1a プライベートサブネットID
+  TodoAppPrivateSubnet1AID:
+    Description: The ID of the Public Subnet at ap-northeast-1a
+    Value: !Ref TodoAppPrivateSubnet1A
     Export:
-      Name: TodoAppSecurityGroupNuxtInstanceID
+      Name: TodoAppPrivateSubnet1AID
+
+  # ap-northeast-1c プライベートサブネットID
+  TodoAppPrivateSubnet1CID:
+    Description: The ID of the Public Subnet at ap-northeast-1c
+    Value: !Ref TodoAppPrivateSubnet1C
+    Export:
+      Name: TodoAppPrivateSubnet1CID
+
+  # ECSインスタンスのセキュリティグループID
+  TodoAppSecurityGroupECSInstanceID:
+    Description: The ID of the SecurityGroup for ECS Instance
+    Value: !Ref TodoAppSecurityGroupECSInstance
+    Export:
+      Name: TodoAppSecurityGroupECSInstanceID

@@ -127,31 +127,31 @@ export default {
     },
     create(params) {
       this.$axios.post('/api/v1/todos', params).then((res) => {
-        if (res.data) {
-          const errorMessage = `
-            下記の部分を確認してください. \n
-            タイトル: ${res.data.title}
-            日付: ${res.data.date}
-            時間: ${res.data.time}
-            内容: ${res.data.content} 
-          `
-          return window.alert(errorMessage)
-        }
+        // if (res.status !== 200) {
+        //   const errorMessage = `
+        //     下記の部分を確認してください. \n
+        //     タイトル: ${res.data.title}
+        //     日付: ${res.data.date}
+        //     時間: ${res.data.time}
+        //     内容: ${res.data.content}
+        //   `
+        //   return window.alert(errorMessage)
+        // }
         this.$router.push('/todos')
       })
     },
     update(params, id) {
       this.$axios.patch(`/api/v1/todos/${id}`, params).then((res) => {
-        if (res.data) {
-          const errorMessage = `
-            下記の部分を確認してください. \n
-            タイトル: ${res.data.title}
-            日付: ${res.data.date}
-            時間: ${res.data.time}
-            内容: ${res.data.content} 
-          `
-          return window.alert(errorMessage)
-        }
+        // if (res.status !== 200) {
+        //   const errorMessage = `
+        //     下記の部分を確認してください. \n
+        //     タイトル: ${res.data.title}
+        //     日付: ${res.data.date}
+        //     時間: ${res.data.time}
+        //     内容: ${res.data.content}
+        //   `
+        //   return window.alert(errorMessage)
+        // }
         this.$router.push('/todos')
       })
     },

@@ -1,0 +1,89 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description:  Create RDS Instance
+Resources:
+  # サブネットグループの作成
+  TodoAppSubnetGroup:
+    Type: AWS::RDS::DBSubnetGroup
+    Properties: 
+      DBSubnetGroupDescription: create todo-app subnet group
+      DBSubnetGroupName: todo-app-db-subnet-group
+      SubnetIds: 
+        - !ImportValue TodoAppPrivateSubnet1AID
+        - !ImportValue TodoAppPrivateSubnet1CID
+      Tags: 
+        - Key: Name
+          Value: todo-app-db-subnet-group
+
+  # セキュリティグループの作成
+  TodoAppSecurityGroup: 
+    Type: AWS::RDS::DBSecurityGroup
+    Properties: 
+      EC2VpcId: !ImportValue TodoAppVPC
+      DBSecurityGroupIngress: 
+        - EC2SecurityGroupId: !ImportValue TodoAppSecurityGroupECSInstanceID
+      GroupDescription: "Backend Access"
+
+  # RDSインスタンスの作成
+  TodoAppRDSInstance:
+    Type: AWS::RDS::DBInstance
+    Properties: 
+      AllocatedStorage: 20
+      # AllowMajorVersionUpgrade: Boolean
+      # AssociatedRoles: 
+      #   - DBInstanceRole
+      # AutoMinorVersionUpgrade: Boolean
+      AvailabilityZone: ap-northeast-1a
+      # BackupRetentionPeriod: Integer
+      # CACertificateIdentifier: String
+      # CharacterSetName: String
+      # CopyTagsToSnapshot: Boolean
+      # DBClusterIdentifier: String
+      DBInstanceClass: db.t3.micro
+      DBInstanceIdentifier: todo-app-rds-instance
+      DBName: todoAppProduction1
+      # DBParameterGroupName: String
+      DBSecurityGroups: 
+        - !Ref TodoAppSecurityGroup
+      # DBSnapshotIdentifier: String
+      DBSubnetGroupName: todo-app-db-subnet-group
+      # DeleteAutomatedBackups: Boolean
+      # DeletionProtection: Boolean
+      # Domain: String
+      # DomainIAMRoleName: String
+      # EnableCloudwatchLogsExports: 
+      #   - String
+      # EnableIAMDatabaseAuthentication: Boolean
+      # EnablePerformanceInsights: Boolean
+      Engine: postgres
+      EngineVersion: 11.5
+      # Iops: Integer
+      # KmsKeyId: String
+      # LicenseModel: String
+      MasterUsername: todoappAdmin
+      # TODO: System Managerで暗号化したパスワードを参照するようにする
+      MasterUserPassword: todoappadminpassword
+      # MaxAllocatedStorage: Integer
+      # MonitoringInterval: Integer
+      # MonitoringRoleArn: String
+      # MultiAZ: Boolean
+      # OptionGroupName: String
+      # PerformanceInsightsKMSKeyId: String
+      # PerformanceInsightsRetentionPeriod: Integer
+      Port: 5432
+      # PreferredBackupWindow: String
+      # PreferredMaintenanceWindow: String
+      # ProcessorFeatures: 
+      #   - ProcessorFeature
+      # PromotionTier: Integer
+      PubliclyAccessible: false
+      # SourceDBInstanceIdentifier: String
+      # SourceRegion: String
+      # StorageEncrypted: Boolean
+      StorageType: standard
+      Tags: 
+        - Key: Name
+          Value: todo-app-rds-instance
+      # Timezone: String
+      # UseDefaultProcessorFeatures: Boolean
+      # VPCSecurityGroups: 
+      #   - String
