@@ -19,5 +19,7 @@ test:
 
 production:
   <<: *default
-  database: todo_calendar_production
-  password: <%= ENV['TODO_CALENDAR_DATABASE_PASSWORD'] %>
+  database: todo-app_production
+  username: app
+  password: <%= ENV['APP_DATABASE_PASSWORD'] %>
+  url: <%= ENV['DATABASE_URL'] %>

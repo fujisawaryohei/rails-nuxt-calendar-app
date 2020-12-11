@@ -14,6 +14,7 @@ services:
       app_net:
         ipv4_address: "172.10.0.2"
 
+  # bundle exec rails s -p 4000 -b '0.0.0.0'
   backend:
     container_name: todo-app-backend
     build: .
@@ -21,19 +22,21 @@ services:
     command: |
       bash -c "bundle install -j4
       rm -f tmp/pids/server.pid &&
-      bundle exec rails s -p 4000 -b '0.0.0.0'"
+      bundle exec puma -C config/puma.rb"
     tty: true
     stdin_open: true
+    # volumes 変更点
     volumes:
       - ./:/app:cached
       - bundle_data:/usr/local/bundle:cached
+      - public_data:/app/public
+      - tmp_data:/app/tmp
+      - log_data:/app/log
       - /app/vendor
-      - /app/tmp
-      - /app/log
       - /app/.git
     environment:
       - TZ=Asia/Tokyo
-      - TODO_APP_API_HOST=http://localhost:4000
+      - TODO_APP_API_HOST=http://localhost:80
       - TODO_APP_FRONT_HOST=http://localhost:3000
       - CORS_ALLOWED_ORIGINS=http://localhost:3000
     depends_on:
@@ -44,6 +47,22 @@ services:
       app_net:
         ipv4_address: "172.10.0.3"
 
+  # 参考: https://toranoana-lab.hatenablog.com/entry/2020/08/14/175706
+  nginx:
+    build:
+      context: ./nginx/
+    volumes:
+      - public_data:/app/public
+      - tmp_data:/app/tmp
+    ports:
+      - 80:80
+    depends_on:
+      - backend
+      - db
+    networks:
+      app_net:
+        ipv4_address: "172.10.0.4"
+
   frontend:
     container_name: todo-app-frontend
     build: ./frontend/
@@ -52,7 +71,7 @@ services:
       - NODE_ENV=development
       - NUXT_HOST=0.0.0.0
       - NUXT_PORT=3000
-      - TODO_APP_API_HOST=http://localhost:4000
+      - TODO_APP_API_HOST=http://localhost:80
       - TODO_APP_FRONT_HOST=http://localhost:3000
     volumes:
       - ./frontend:/app:cached
@@ -61,11 +80,11 @@ services:
     command: "yarn run dev"
     networks:
       app_net:
-        ipv4_address: "172.10.0.4"
+        ipv4_address: "172.10.0.5"
     depends_on:
       - backend
       - db
-
+ 
 networks:
   app_net:
     driver: bridge
@@ -77,3 +96,6 @@ networks:
 volumes:
   postgres_data:
   bundle_data:
+  public_data:
+  tmp_data:
+  log_data:
