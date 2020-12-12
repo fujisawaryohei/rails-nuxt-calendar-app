@@ -14,31 +14,43 @@ Resources:
           Value: todo-app-vpc
 
   # セキュリティグループ
-  # ECSインスタンスのセキュリティグループの作成とVPCへの登録
-  TodoAppSecurityGroupECSInstance:
+  # フロントエンドコンテナインスタンスのセキュリティグループの作成とVPCへの登録
+  TodoAppFrontendSecurityGroup:
     Type: AWS::EC2::SecurityGroup
     Properties: 
       GroupDescription: Setting SecurityGroup
-      GroupName: Setting Security Group for Nuxt Instance
+      GroupName: Setting Security Group for frontend
       SecurityGroupIngress:
-        - CidrIp: 0.0.0.0/0
-          Description: for developer
-          FromPort: 80
-          ToPort: 80
-          IpProtocol: tcp
         - CidrIp: 0.0.0.0/0
           Description: users
           FromPort: 3000
           ToPort: 3000
           IpProtocol: tcp
+      Tags:
+        - Key: Name
+          Value: todo-app-frontend-security-group
+      VpcId: !Ref TodoAppVPC
+
+  # バックエンドコンテナインスタンスのセキュリティグループの作成とVPCへの登録
+  TodoAppBackendSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties: 
+      GroupDescription: Setting SecurityGroup
+      GroupName: Setting Security Group for backend
+      SecurityGroupIngress:
         - CidrIp: 0.0.0.0/0
           Description: users
+          FromPort: 80
+          ToPort: 80
+          IpProtocol: tcp
+        - CidrIp: 0.0.0.0/0
+          Description: db
           FromPort: 5432
           ToPort: 5432
           IpProtocol: tcp
       Tags:
         - Key: Name
-          Value: todo-app-nuxt-security-group-nuxt
+          Value: todo-app-backend-security-group
       VpcId: !Ref TodoAppVPC
       
   # ap-northeast-1a サブネット
@@ -302,23 +314,37 @@ Outputs:
     Export:
       Name: TodoAppPublicSubnet1AID
 
-  # ap-northeast-1a プライベートサブネットID
+  # ap-northeast-1a プライベートサブネットID For RDS
   TodoAppPrivateSubnet1AID:
     Description: The ID of the Public Subnet at ap-northeast-1a
     Value: !Ref TodoAppPrivateSubnet1A
     Export:
       Name: TodoAppPrivateSubnet1AID
 
-  # ap-northeast-1c プライベートサブネットID
+  # ap-northeast-1c プライベートサブネットID For RDS
   TodoAppPrivateSubnet1CID:
     Description: The ID of the Public Subnet at ap-northeast-1c
     Value: !Ref TodoAppPrivateSubnet1C
     Export:
       Name: TodoAppPrivateSubnet1CID
 
-  # ECSインスタンスのセキュリティグループID
-  TodoAppSecurityGroupECSInstanceID:
-    Description: The ID of the SecurityGroup for ECS Instance
-    Value: !Ref TodoAppSecurityGroupECSInstance
+  # フロントエンドコンテナインスタンスのセキュリティグループのID
+  TodoAppFrontendSecurityGroupID:
+    Description: The ID of the SecurityGroup for frontend container instance
+    Value: !Ref TodoAppFrontendSecurityGroup
     Export:
-      Name: TodoAppSecurityGroupECSInstanceID
+      Name: TodoAppFrontendSecurityGroupID
+
+  # バックエンドコンテナインスタンスのセキュリティグループのID
+  TodoAppBackendSecurityGroupID:
+    Description: The ID of the SecurityGroup for backend container instance
+    Value: !Ref TodoAppFrontendSecurityGroup
+    Export:
+      Name: TodoAppBackendSecurityGroupID    
+  
+  # Nat GatewayのElasticIP
+  TodoAppElasticIPOfNatGateway1A:
+    Description: The IP Of the NatGateway
+    Value: !Ref ElasticIP1AForNatGateway
+    Export:
+      Name: TodoAppElasticIPOfNatGateway1A

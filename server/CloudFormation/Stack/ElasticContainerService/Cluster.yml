@@ -2,7 +2,7 @@ AWSTemplateFormatVersion: '2010-09-09'
 Description: Set ECS Task
 Resources:
   # クラスター作成
-  TodoAppPublicCluster:
+  TodoAppCluster:
     Type: AWS::ECS::Cluster
     Properties:
       # CapacityProviders: 
@@ -15,8 +15,8 @@ Resources:
       # Tags: 
       #   - String
 Outputs:
-  TodoAppPublicClusterName:
+  TodoAppClusterName:
     Description: The Name of the Public Cluster
-    Value: !Ref TodoAppPublicCluster
+    Value: !Ref TodoAppCluster
     Export:
-      Name: TodoAppPublicClusterName
+      Name: TodoAppClusterName

@@ -1,12 +1,12 @@
 AWSTemplateFormatVersion: '2010-09-09'
 Description: deploy service
 Resources:
-  TodoAppService:
+  TodoAppFrontendService:
     Type: AWS::ECS::Service
     Properties: 
       # CapacityProviderStrategy: 
       #   - CapacityProviderStrategyItem
-      Cluster: !ImportValue TodoAppPublicClusterName
+      Cluster: !ImportValue TodoAppClusterName
       # DeploymentConfiguration:
       #   DeploymentConfiguration
       # DeploymentController: 
@@ -21,7 +21,7 @@ Resources:
         AwsvpcConfiguration:
           AssignPublicIp: ENABLED
           SecurityGroups: 
-            - !ImportValue TodoAppSecurityGroupECSInstanceID
+            - !ImportValue TodoAppFrontendSecurityGroupID
           Subnets: 
             - !ImportValue TodoAppPublicSubnet1AID
       # PlacementConstraints: 
@@ -38,4 +38,43 @@ Resources:
       #   - ServiceRegistry
       # Tags: 
       #   - Tag
-      TaskDefinition: !ImportValue TodoAppTaskDefinitionPublicARN
+      TaskDefinition: !ImportValue TodoAppFrontendTaskDefinitionARN
+
+  TodoAppBackendService:
+    Type: AWS::ECS::Service
+    Properties: 
+      # CapacityProviderStrategy: 
+      #   - CapacityProviderStrategyItem
+      Cluster: !ImportValue TodoAppClusterName
+      # DeploymentConfiguration:
+      #   DeploymentConfiguration
+      # DeploymentController: 
+      #   DeploymentController
+      # DesiredCount: Integer
+      # EnableECSManagedTags: Boolean
+      # HealthCheckGracePeriodSeconds: Integer
+      LaunchType: FARGATE
+      # LoadBalancers: 
+      #   - LoadBalancer
+      NetworkConfiguration:
+        AwsvpcConfiguration:
+          AssignPublicIp: ENABLED
+          SecurityGroups: 
+            - !ImportValue TodoAppBackendSecurityGroupID
+          Subnets: 
+            - !ImportValue TodoAppPublicSubnet1AID
+      # PlacementConstraints: 
+      #   - PlacementConstraint
+      # PlacementStrategies: 
+      #   - PlacementStrategy
+      # PlatformVersion: String
+      # PropagateTags: String
+      # Role: String
+      # SchedulingStrategy: String
+      # ServiceArn: String
+      # ServiceName: todo-app-frontend
+      # ServiceRegistries: 
+      #   - ServiceRegistry
+      # Tags: 
+      #   - Tag
+      TaskDefinition: !ImportValue TodoAppBackendTaskDefinitionARN

@@ -19,8 +19,8 @@ Resources:
         - arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy
       RoleName: ecsTaskExecutionRoleForTodoApp
 
-  # タスク定義
-  TodoAppTaskDefinitionPublic:
+  # Frontend タスク定義
+  TodoAppFrontendTaskDefinition:
     Type: AWS::ECS::TaskDefinition
     Properties:
       ContainerDefinitions: 
@@ -65,7 +65,7 @@ Resources:
           # MemoryReservation: Integer
           # MountPoints: 
           #   - MountPoint
-          Name: String
+          Name: todo-app-frontend-production
           # PortMappings:
           #   - PortMapping
           # Privileged: Boolean
@@ -108,10 +108,174 @@ Resources:
       # TaskRoleArn: String
       # Volumes: 
       #   - Volume
+  
+  # Backend タスク定義
+  TodoAppBackendTaskDefinition:
+    Type: AWS::ECS::TaskDefinition
+    Properties:
+      ContainerDefinitions: 
+        - 
+          # Command: 
+          #   - String
+          # Cpu: Integer
+          # DependsOn: 
+          #   - ContainerDependency
+          # DisableNetworking: Boolean
+          # DnsSearchDomains: 
+          #   - String
+          # DnsServers: 
+          #   - String
+          # DockerLabels: 
+          #   Key : Value
+          # DockerSecurityOptions: 
+          #   - String
+          # EntryPoint: 
+          #   - String
+          # Environment: 
+          #   - KeyValuePair
+          # EnvironmentFiles: 
+          #   - EnvironmentFile
+          # Essential: Boolean
+          # ExtraHosts: 
+          #   - HostEntry
+          # FirelensConfiguration: 
+          #   FirelensConfiguration
+          # HealthCheck: 
+          #   HealthCheck
+          # Hostname: String
+          Image: 000796434707.dkr.ecr.ap-northeast-1.amazonaws.com/todo-app-backend-production
+          # Interactive: Boolean
+          # Links: 
+          #   - String
+          # LinuxParameters: 
+          #   LinuxParameters
+          # LogConfiguration: 
+          #   LogConfiguration
+          # Memory: Integer
+          # MemoryReservation: Integer
+          # MountPoints: 
+          #   - MountPoint
+          Name: todo-app-backend-production
+          # PortMappings:
+          #   - PortMapping
+          # Privileged: Boolean
+          # PseudoTerminal: Boolean
+          # ReadonlyRootFilesystem: Boolean
+          # RepositoryCredentials: 
+          #   RepositoryCredentials
+          # ResourceRequirements: 
+          #   - ResourceRequirement
+          # Secrets: 
+          #   - Secret
+          # StartTimeout: Integer
+          # StopTimeout: Integer
+          # SystemControls: 
+          #   - SystemControl
+          # Ulimits: 
+          #   - Ulimit
+          # User: String
+          # VolumesFrom: 
+          #   - VolumeFrom
+          # WorkingDirectory: String
+        - 
+          # Command: 
+          #   - String
+          # Cpu: Integer
+          # DependsOn: 
+          #   - ContainerDependency
+          # DisableNetworking: Boolean
+          # DnsSearchDomains: 
+          #   - String
+          # DnsServers: 
+          #   - String
+          # DockerLabels: 
+          #   Key : Value
+          # DockerSecurityOptions: 
+          #   - String
+          # EntryPoint: 
+          #   - String
+          # Environment: 
+          #   - KeyValuePair
+          # EnvironmentFiles: 
+          #   - EnvironmentFile
+          # Essential: Boolean
+          # ExtraHosts: 
+          #   - HostEntry
+          # FirelensConfiguration: 
+          #   FirelensConfiguration
+          # HealthCheck: 
+          #   HealthCheck
+          # Hostname: String
+          Image: 000796434707.dkr.ecr.ap-northeast-1.amazonaws.com/todo-app-nginx-production
+          # Interactive: Boolean
+          # Links: 
+          #   - String
+          # LinuxParameters: 
+          #   LinuxParameters
+          # LogConfiguration: 
+          #   LogConfiguration
+          # Memory: Integer
+          # MemoryReservation: Integer
+          # MountPoints: 
+          #   - MountPoint
+          Name: todo-app-nginx-production
+          # PortMappings:
+          #   - PortMapping
+          # Privileged: Boolean
+          # PseudoTerminal: Boolean
+          # ReadonlyRootFilesystem: Boolean
+          # RepositoryCredentials: 
+          #   RepositoryCredentials
+          # ResourceRequirements: 
+          #   - ResourceRequirement
+          # Secrets: 
+          #   - Secret
+          # StartTimeout: Integer
+          # StopTimeout: Integer
+          # SystemControls: 
+          #   - SystemControl
+          # Ulimits: 
+          #   - Ulimit
+          # User: String
+          # VolumesFrom: 
+          #   - VolumeFrom
+          # WorkingDirectory: String
+      Cpu: 256
+      ExecutionRoleArn: !GetAtt RoleOfTodoAppEcsTask.Arn
+      # Family: String
+      # InferenceAccelerators: 
+      #   - InferenceAccelerator
+      # IpcMode: String
+      Memory: 512
+      NetworkMode: awsvpc
+      # PidMode: String
+      # PlacementConstraints: 
+      #   - TaskDefinitionPlacementConstraint
+      # ProxyConfiguration: 
+      #   ProxyConfiguration
+      RequiresCompatibilities: 
+        - FARGATE
+      Tags: 
+        - Key: Name
+          Value: todo-app-backend-task
+      # TaskRoleArn: String
+      # Volumes: 
+      #   - Volume
+
 # エクスポート
 Outputs:
-  TodoAppTaskDefinitionPublicARN:
+  # FrontendのタスクのARN
+  TodoAppBackendTaskDefinitionARN:
     Description: The ARN of the TaskDefinition
-    Value: !Ref TodoAppTaskDefinitionPublic
+    Value: !Ref TodoAppBackendTaskDefinition
     Export:
-      Name: TodoAppTaskDefinitionPublicARN
+      Name: TodoAppBackendTaskDefinitionARN
+  
+  # BackendのタスクのARN
+  TodoAppFrontendTaskDefinitionARN:
+    Description: The ARN of the TaskDefinition
+    Value: !Ref TodoAppFrontendTaskDefinition
+    Export:
+      Name: TodoAppFrontendTaskDefinitionARN
+
+  

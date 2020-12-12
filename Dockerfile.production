@@ -1,7 +1,5 @@
 FROM ruby:2.7.0
 
-RUN mkdir /app
-
 WORKDIR /app
 
 ADD Gemfile /app/
@@ -10,8 +8,12 @@ ADD Gemfile.lock /app/
 RUN bundle config set path 'vendor/bundle'
 RUN bundle install -j4
 
-ADD . /app
+ADD ./ /app
 
-EXPOSE 80
+VOLUME /app/public
+VOLUME /app/tmp
+VOLUME /app/log
 
-CMD ["bundle", "exec", "puma"]
+EXPOSE 4000
+
+CMD ["bundle", "exec", "puma", "-C", "config/puma.rb"]
