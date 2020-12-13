@@ -1,62 +1,113 @@
-# AWSTemplateFormatVersion: '2010-09-09'
-# Description: ApplicationLoadBalancer Stuck
-# Resources:
-#   # Application Load Balancerのセキュリティグループを作成
-#   TodoAppELBSecurityGroup:
-#     Type: AWS::EC2::SecurityGroup
-#     Properties: 
-#       GroupDescription: Setting SecurityGroup
-#       GroupName: Setting Security Group for ELB
-#       SecurityGroupIngress: 
-#         - CidrIp: 0.0.0.0/0
-#           Description: users
-#           FromPort: 80
-#           ToPort: 80
-#           IpProtocol: tcp
-#       Tags:
-#         - Key: Name
-#           Value: todo-app-elb-security-group
+AWSTemplateFormatVersion: '2010-09-09'
+Description: ApplicationLoadBalancer Stuck
+Resources:
+  # Application Load Balancerのセキュリティグループを作成
+  TodoAppELBSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties: 
+      GroupDescription: Setting SecurityGroup
+      GroupName: Setting Security Group for ELB
+      SecurityGroupIngress: 
+        - CidrIp: 0.0.0.0/0
+          Description: users
+          FromPort: 80
+          ToPort: 80
+          IpProtocol: tcp
+      Tags:
+        - Key: Name
+          Value: todo-app-elb-security-group
+      VpcId: !ImportValue TodoAppVPCID
 
-#   # Applicaiton Load Balancerを作成
-#   TodoAppLoadBalancer:
-#     Type: AWS::ElasticLoadBalancingV2::LoadBalancer
-#     Properties: 
-#       # IpAddressType: String
-#       # LoadBalancerAttributes: 
-#       #   - LoadBalancerAttribute
-#       Name: todo-app-frontend-elb
-#       # Scheme: String
-#       SecurityGroups: !Ref TodoAppELBSecurityGroup
-#       SubnetMappings: 
-#         - SubnetId: !ImportValue TodoAppPublicSubnet1AID
-#           # AllocationId: String
-#           # PrivateIPv4Address: String
-#       # Subnets: 
-#       #   - String
-#       Tags:
-#         - Key: Name
-#           Value: todo-app-frontend-elb
-#       Type: application
+  # Applicaiton Load Balancerを作成
+  TodoAppLoadBalancer:
+    Type: AWS::ElasticLoadBalancingV2::LoadBalancer
+    Properties: 
+      # IpAddressType: String
+      # LoadBalancerAttributes: 
+      #   - LoadBalancerAttribute
+      Name: todo-app-frontend-elb
+      # Scheme: String
+      SecurityGroups: 
+        - !Ref TodoAppELBSecurityGroup
+      SubnetMappings: 
+        - SubnetId: !ImportValue TodoAppPublicSubnet1AID
+          # AllocationId: String
+          # PrivateIPv4Address: String
+        - SubnetId: !ImportValue TodoAppPublicSubnet1CID
+          # AllocationId: String
+          # PrivateIPv4Address: String
+      # Subnets:
+      #   - String
+      Tags:
+        - Key: Name
+          Value: todo-app-frontend-elb
+      Type: application
+  
+  # ターゲットグループの作成
+  TodoAppTargetGroup:
+    Type: AWS::ElasticLoadBalancingV2::TargetGroup
+    Properties:
+      HealthCheckIntervalSeconds: 10
+      # HealthCheckPath: String
+      # HealthCheckPort: Integer
+      # HealthCheckProtocol: String
+      # HealthCheckTimeoutSeconds: Integer
+      # HealthyThresholdCount: Integer
+      # Matcher: Integer
+      UnhealthyThresholdCount: 2
+      HealthyThresholdCount: 2
+      Name: frontend-target
+      Port: 3000
+      Protocol: HTTP
+      # TargetGroupAttributes:
+      #   - KeyValuePair
+      # Targets: String
+      TargetType: ip
+      # UnhealthyThresholdCount: Integer
+      VpcId: !ImportValue TodoAppVPCID
 
-#   # リスナーをApplication Load Balancerに関連付ける
-#   TodoAppListener:
-#     Type: AWS::ElasticLoadBalancingV2::Listener
-#     Properties:
-#       # AlpnPolicy: 
-#       #   - String
-#       # Certificates: 
-#       #   - Certificate
-#       # DefaultActions: 
-#       #   - Action
-#       LoadBalancerArn: !Ref TodoAppLoadBalancer
-#       Port: 80
-#       Protocol: HTTP
-#       # SslPolicy: String
+  # リスナーをApplication Load Balancerに関連付ける
+  TodoAppListener:
+    Type: AWS::ElasticLoadBalancingV2::Listener
+    Properties:
+      # AlpnPolicy: 
+      #   - String
+      # Certificates: 
+      #   - Certificate
+      DefaultActions: 
+        - # AuthenticateCognitoConfig: AuthenticateCognitoConfig
+          # AuthenticateOidcConfig: AuthenticateOidcConfig
+          # FixedResponseConfig: FixedResponseConfig
+          # ForwardConfig: ForwardConfig
+          # Order: Integer
+          # RedirectConfig: RedirectConfig
+          # forward先のターゲットグループを指定
+          TargetGroupArn: !Ref TodoAppTargetGroup
+          Type: forward
+      LoadBalancerArn: !Ref TodoAppLoadBalancer
+      Port: 80
+      Protocol: HTTP
+      # SslPolicy: String
 
-# # エクスポート
-# Outputs:
-#   StackTodoAppLoadBalancerDNS:
-#     Description: The DNS Name of Application Load Balancer
-#     Value: !GetAtt TodoAppLoadBalancer.DNSName
-#     Export:
-#       Name: StackTodoAppLoadBalancer
+# エクスポート
+Outputs:
+  # Load BalancerのARN
+  TodoAppLoadBalancerARN:
+    Description: The ARN of Application Load Balancer
+    Value: !Ref TodoAppLoadBalancer
+    Export:
+      Name: TodoAppLoadBalancerARN
+  
+  # Load BalancerのDNS名
+  TodoAppLoadBalancerDNS:
+    Description: The DNS Name of Application Load Balancer
+    Value: !GetAtt TodoAppLoadBalancer.DNSName
+    Export:
+      Name: TodoAppLoadBalancerDNS
+
+  # ELBのターゲットグループのARN
+  TodoAppTargetGroupARN:
+    Description: The ARN of Application Load Balancer Target Group
+    Value: !Ref TodoAppTargetGroup
+    Export:
+      Name: TodoAppTargetGroupARN

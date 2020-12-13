@@ -16,8 +16,8 @@ Resources:
       # VPCs: 
       #   - VPC
         
-  # Aレコード作成
-  TodoAppSetARecord:
+  # Frontend用のAレコード作成
+  TodoAppFrontendSetARecord:
     Type: AWS::Route53::RecordSet
     Properties: 
         # AliasTarget: 
@@ -33,8 +33,7 @@ Resources:
         Name: kawada.work
         # Region: String
         ResourceRecords:
-          # NuxtインスタンスのIP
-          # -
+          - !ImportValue TodoAppLoadBalancerDNS
         # SetIdentifier: String
         TTL: 300
         Type: A

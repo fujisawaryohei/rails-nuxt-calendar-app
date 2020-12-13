@@ -1,12 +1,13 @@
 AWSTemplateFormatVersion: '2010-09-09'
 Description: deploy service
 Resources:
+  # Service 定義
   TodoAppService:
     Type: AWS::ECS::Service
     Properties: 
       # CapacityProviderStrategy: 
       #   - CapacityProviderStrategyItem
-      Cluster: !ImportValue TodoAppPublicClusterName
+      Cluster: !ImportValue TodoAppClusterName
       # DeploymentConfiguration:
       #   DeploymentConfiguration
       # DeploymentController: 
@@ -15,13 +16,19 @@ Resources:
       # EnableECSManagedTags: Boolean
       # HealthCheckGracePeriodSeconds: Integer
       LaunchType: FARGATE
-      # LoadBalancers: 
-      #   - LoadBalancer
+      LoadBalancers:
+        - ContainerName: todo-app-frontend-production-container
+          # タスク定義時に行ったコンテナポートを指定する必要がある
+          ContainerPort: 3000
+          # LoadBalancerNameはClassicLoadBalancerのときのみ
+          # LoadBalancerName: String
+          # ALB, NLBはここで指定する
+          TargetGroupArn: !ImportValue TodoAppTargetGroupARN
       NetworkConfiguration:
         AwsvpcConfiguration:
           AssignPublicIp: ENABLED
           SecurityGroups: 
-            - !ImportValue TodoAppSecurityGroupNuxtInstanceID
+            - !ImportValue TodoAppSecurityGroupID
           Subnets: 
             - !ImportValue TodoAppPublicSubnet1AID
       # PlacementConstraints: 
@@ -33,9 +40,9 @@ Resources:
       # Role: String
       # SchedulingStrategy: String
       # ServiceArn: String
-      # ServiceName: todo-app-frontend
+      ServiceName: todo-app-production-service
       # ServiceRegistries: 
       #   - ServiceRegistry
-      # Tags: 
+      # Tags:
       #   - Tag
-      TaskDefinition: !ImportValue TodoAppTaskDefinitionPublicARN
+      TaskDefinition: !ImportValue TodoAppTaskDefinition
