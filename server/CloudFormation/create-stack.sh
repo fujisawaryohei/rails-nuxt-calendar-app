@@ -3,6 +3,9 @@ set -eu
 # VPCスタックテンプレートの検証
 aws cloudformation validate-template --template-body file://"$(pwd)"/Stack/VPC.yml
 
+# ELBスタックテンプレートの検証
+aws cloudformation validate-template --template-body file://"$(pwd)"/Stack/ElasticLoadBalancing.yml
+
 # RDSスタックテンプレートの検証
 aws cloudformation validate-template --template-body file://"$(pwd)"/Stack/RDS.yml
 
@@ -16,14 +19,18 @@ aws cloudformation validate-template --template-body file://"$(pwd)"/Stack/Elast
 aws cloudformation validate-template --template-body file://"$(pwd)"/Stack/ElasticContainerService/Service.yml
 
 # Route53スタックテンプレートの検証 TODO: Fargate IPの固定化
-# aws cloudformation validate-template --template-body file://"$(pwd)"/Stack/Route53.yml
+aws cloudformation validate-template --template-body file://"$(pwd)"/Stack/Route53.yml
 
 # VPCスタックの作成
 aws cloudformation create-stack --stack-name VPCStack --template-body file://"$(pwd)"/Stack/VPC.yml
 aws cloudformation wait stack-create-complete --stack-name VPCStack
 
-# # RDSスタックの作成
-# aws cloudformation create-template --stack-name RDSStack --template-body file://"$(pwd)"/Stack/RDS.yml
+# ELBスタックの作成
+aws cloudformation create-stack --stack-name ELBStack --template-body file://"$(pwd)"/Stack/ElasticLoadBalancing.yml
+aws cloudformation wait stack-create-complete --stack-name ELBStack
+
+# RDSスタックの作成
+# aws cloudformation create-stack --stack-name RDSStack --template-body file://"$(pwd)"/Stack/RDS.yml
 # aws cloudformation wait stack-create-complete --stack-name RDSStack
 
 # TaskDefnitionスタックの作成

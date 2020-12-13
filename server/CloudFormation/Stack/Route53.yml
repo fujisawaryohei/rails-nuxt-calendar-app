@@ -33,30 +33,7 @@ Resources:
         Name: kawada.work
         # Region: String
         ResourceRecords:
-          - !ImportValue TodoAppElasticIPOfNatGateway1A
-        # SetIdentifier: String
-        TTL: 300
-        Type: A
-        # Weight: Integer
-
-  # Backend用のAレコード作成
-  TodoAppFrontendSetARecord:
-    Type: AWS::Route53::RecordSet
-    Properties: 
-        # AliasTarget: 
-        #   AliasTarget
-        Comment: Set A Record
-        # Failover: String
-        # GeoLocation: 
-        #   GeoLocation
-        # HealthCheckId: String
-        HostedZoneId: !Ref TodoAppHostedZone
-        # HostedZoneName: String
-        # MultiValueAnswer: Boolean
-        Name: backend.kawada.work
-        # Region: String
-        ResourceRecords:
-          - !ImportValue TodoAppElasticIPOfNatGateway1A
+          - !ImportValue TodoAppLoadBalancerDNS
         # SetIdentifier: String
         TTL: 300
         Type: A

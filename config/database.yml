@@ -20,6 +20,6 @@ test:
 production:
   <<: *default
   database: todo-app_production
-  username: app
+  username: postgres
   password: <%= ENV['APP_DATABASE_PASSWORD'] %>
   url: <%= ENV['DATABASE_URL'] %>

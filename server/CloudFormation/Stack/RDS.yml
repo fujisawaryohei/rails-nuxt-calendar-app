@@ -20,7 +20,7 @@ Resources:
     Properties: 
       EC2VpcId: !ImportValue TodoAppVPC
       DBSecurityGroupIngress: 
-        - EC2SecurityGroupId: !ImportValue TodoAppSecurityGroupECSInstanceID
+        - EC2SecurityGroupId: !ImportValue TodoAppDBSecurityGroupID
       GroupDescription: "Backend Access"
 
   # RDSインスタンスの作成

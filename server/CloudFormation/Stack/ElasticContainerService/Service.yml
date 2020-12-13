@@ -1,6 +1,32 @@
 AWSTemplateFormatVersion: '2010-09-09'
 Description: deploy service
 Resources:
+  # Service Discoverty(CloudMap)参考: https://aws.amazon.com/jp/premiumsupport/knowledge-center/cloudformation-ecs-service-discovery/
+  # Private NameSpaceの作成→ECS Service DiscovertyはCloudMap APIを統合している。CloudMap APIを使用してPrivate Hosted Zoneを作成する。
+  TodoAppPrivateNamespace:
+    Type: AWS::ServiceDiscovery::PrivateDnsNamespace
+    Properties:
+        Name: kawada.work
+        Vpc: !ImportValue TodoAppVPCID
+
+  # Discovery Serviceの作成→作成したPrivate Hosted Zoneに対してDNSレコードの設定を行う。
+  TodoAppDiscoveryService:
+    Type: AWS::ServiceDiscovery::Service
+    Properties: 
+      Description: Discovery Service for the Demo Application
+      DnsConfig:
+        RoutingPolicy: MULTIVALUE
+        DnsRecords:
+          - TTL: 60
+            Type: A
+          - TTL: 60
+            Type: SRV
+      HealthCheckCustomConfig:
+        FailureThreshold: 1
+      Name: backend
+      NamespaceId: !Ref TodoAppPrivateNamespace
+
+  # Frontend Service 定義
   TodoAppFrontendService:
     Type: AWS::ECS::Service
     Properties: 
@@ -15,8 +41,14 @@ Resources:
       # EnableECSManagedTags: Boolean
       # HealthCheckGracePeriodSeconds: Integer
       LaunchType: FARGATE
-      # LoadBalancers: 
-      #   - LoadBalancer
+      LoadBalancers: 
+        - ContainerName: todo-app-frontend-production-container
+          # タスク定義時に行ったコンテナポートを指定する必要がある
+          ContainerPort: 3000
+          # LoadBalancerNameはClassicLoadBalancerのときのみ
+          # LoadBalancerName: String
+          # ALB, NLBはここで指定する
+          TargetGroupArn: !ImportValue TodoAppTargetGroupARN
       NetworkConfiguration:
         AwsvpcConfiguration:
           AssignPublicIp: ENABLED
@@ -33,13 +65,14 @@ Resources:
       # Role: String
       # SchedulingStrategy: String
       # ServiceArn: String
-      # ServiceName: todo-app-frontend
+      ServiceName: frontend
       # ServiceRegistries: 
       #   - ServiceRegistry
-      # Tags: 
+      # Tags:
       #   - Tag
       TaskDefinition: !ImportValue TodoAppFrontendTaskDefinitionARN
 
+  # Backend Service 定義
   TodoAppBackendService:
     Type: AWS::ECS::Service
     Properties: 
@@ -62,7 +95,7 @@ Resources:
           SecurityGroups: 
             - !ImportValue TodoAppBackendSecurityGroupID
           Subnets: 
-            - !ImportValue TodoAppPublicSubnet1AID
+            - !ImportValue TodoAppPrivateSubnet1AID
       # PlacementConstraints: 
       #   - PlacementConstraint
       # PlacementStrategies: 
@@ -72,9 +105,13 @@ Resources:
       # Role: String
       # SchedulingStrategy: String
       # ServiceArn: String
-      # ServiceName: todo-app-frontend
-      # ServiceRegistries: 
-      #   - ServiceRegistry
+      # ここで命名したサービス名がサブドメインとなる
+      ServiceName: backend
+      ServiceRegistries: 
+        - # ContainerName: String
+          # ContainerPort: Integer
+          Port: 80
+          RegistryArn: !GetAtt TodoAppDiscoveryService.Arn
       # Tags: 
       #   - Tag
       TaskDefinition: !ImportValue TodoAppBackendTaskDefinitionARN

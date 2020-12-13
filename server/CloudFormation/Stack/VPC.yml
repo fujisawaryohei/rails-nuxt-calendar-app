@@ -43,6 +43,18 @@ Resources:
           FromPort: 80
           ToPort: 80
           IpProtocol: tcp
+      Tags:
+        - Key: Name
+          Value: todo-app-backend-security-group
+      VpcId: !Ref TodoAppVPC
+
+  # DBインスタンスのセキュリティグループの作成とVPCへの登録
+  TodoAppDBSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties: 
+      GroupDescription: Setting SecurityGroup
+      GroupName: Setting Security Group for backend
+      SecurityGroupIngress:
         - CidrIp: 0.0.0.0/0
           Description: db
           FromPort: 5432
@@ -50,7 +62,7 @@ Resources:
           IpProtocol: tcp
       Tags:
         - Key: Name
-          Value: todo-app-backend-security-group
+          Value: todo-app-db-security-group
       VpcId: !Ref TodoAppVPC
       
   # ap-northeast-1a サブネット
@@ -314,14 +326,21 @@ Outputs:
     Export:
       Name: TodoAppPublicSubnet1AID
 
-  # ap-northeast-1a プライベートサブネットID For RDS
+  # ap-northeast-1c パブリックサブネットID
+  TodoAppPublicSubnet1CID:
+    Description: The ID of the Public Subnet at ap-northeast-1c
+    Value: !Ref TodoAppPublicSubnet1C
+    Export:
+      Name: TodoAppPublicSubnet1CID
+
+  # ap-northeast-1a プライベートサブネットID
   TodoAppPrivateSubnet1AID:
     Description: The ID of the Public Subnet at ap-northeast-1a
     Value: !Ref TodoAppPrivateSubnet1A
     Export:
       Name: TodoAppPrivateSubnet1AID
 
-  # ap-northeast-1c プライベートサブネットID For RDS
+  # ap-northeast-1c プライベートサブネットID
   TodoAppPrivateSubnet1CID:
     Description: The ID of the Public Subnet at ap-northeast-1c
     Value: !Ref TodoAppPrivateSubnet1C
@@ -340,7 +359,14 @@ Outputs:
     Description: The ID of the SecurityGroup for backend container instance
     Value: !Ref TodoAppFrontendSecurityGroup
     Export:
-      Name: TodoAppBackendSecurityGroupID    
+      Name: TodoAppBackendSecurityGroupID
+    
+  # DBインスタンスのセキュリティグループのID
+  TodoAppDBSecurityGroupID:
+    Description: The ID of the SecurityGroup for backend container instance
+    Value: !Ref TodoAppDBSecurityGroup
+    Export:
+      Name: TodoAppDBSecurityGroupID
   
   # Nat GatewayのElasticIP
   TodoAppElasticIPOfNatGateway1A:
